@@ -15,25 +15,28 @@ class _PurchaseEntryPageState extends State<PurchaseEntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Purchase Details'),
-      ),
-      body: Builder(
-        builder:(bContext) => Container(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: <Widget>[
-              getNameWidget(),
-              SizedBox(
-                height: 8.0,
-              ),
-              getPriceWidget(),
-              SizedBox(
-                height: 8.0,
-              ),
-              getSubmitButton(bContext)
-            ],
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Purchase Details'),
+        ),
+        body: Builder(
+          builder: (bContext) => Container(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                getNameWidget(),
+                SizedBox(
+                  height: 8.0,
+                ),
+                getPriceWidget(),
+                SizedBox(
+                  height: 8.0,
+                ),
+                getSubmitButton(bContext)
+              ],
+            ),
           ),
         ),
       ),
@@ -51,9 +54,9 @@ class _PurchaseEntryPageState extends State<PurchaseEntryPage> {
   Widget getPriceWidget() {
     return TextFormField(
       keyboardType: TextInputType.number,
-      decoration:
-          InputDecoration(hintText: StringConstants.ENTER_PURCHASE_PRICE,
-          ),
+      decoration: InputDecoration(
+        hintText: StringConstants.ENTER_PURCHASE_PRICE,
+      ),
       controller: _priceController,
     );
   }
@@ -73,9 +76,14 @@ class _PurchaseEntryPageState extends State<PurchaseEntryPage> {
   void submitPriceData() {
     String name = _nameController.text;
     int price = int.tryParse(_priceController.text);
-    ItemModel model = ItemModel(name: name,price: price);
-    PurchaseDatabase().insert(model);
+    ItemModel model = ItemModel(name: name, price: price);
+    PurchaseDatabase().insertPurchase(model);
     _nameController.clear();
     _priceController.clear();
+  }
+
+  Future<bool> onBackPressed() async {
+    Navigator.pop(context, true);
+    return false;
   }
 }

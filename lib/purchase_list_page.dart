@@ -10,27 +10,43 @@ class PurchaseList extends StatefulWidget {
 
 class _PurchaseListState extends State<PurchaseList> {
   List<ItemModel> items = List();
+  String availableIncome;
+
+  @override
+  void initState() {
+    super.initState();
+    getItems();
+  }
 
   @override
   Widget build(BuildContext context) {
-    getItems();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Purchase History'),
-      ),
-      body: Container(
-        padding: EdgeInsets.all(16.0),
-        child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, position) {
-              final item = items[position];
-              return ListTile(
-                title: Text(
-                  '${item.id}. Name [ ${item.name} ] Price [ ${item.price} ] ',
-                  style: Theme.of(context).textTheme.headline,
-                ),
-              );
-            }),
+    return WillPopScope(
+      onWillPop: onBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Purchase History'),
+        ),
+        body: Container(
+          padding: EdgeInsets.all(16.0),
+          child: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, position) {
+                final item = items[position];
+                return Dismissible(
+                  key: Key("${item.id}"),
+                  background: Container(color: Colors.deepOrangeAccent),
+                  onDismissed: (direction) {
+                    deleteItem(item);
+                  },
+                  child: ListTile(
+                    title: Text(
+                      '${item.id}. Name [ ${item.name} ] Price [ ${item.price} ] ',
+                      style: Theme.of(context).textTheme.headline,
+                    ),
+                  ),
+                );
+              }),
+        ),
       ),
     );
   }
@@ -40,5 +56,21 @@ class _PurchaseListState extends State<PurchaseList> {
     setState(() {
       items = list;
     });
+  }
+
+  void deleteItem(ItemModel item) {
+    PurchaseDatabase().deletePurchase(item.id).then((value) {
+      print('Result = $value');
+      if (value == 1) {
+        setState(() {
+          items.remove(item);
+        });
+      }
+    });
+  }
+
+  Future<bool> onBackPressed() async {
+    Navigator.pop(context, true);
+    return false;
   }
 }
