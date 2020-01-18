@@ -1,3 +1,4 @@
+import 'package:demo_app/add_income_page.dart';
 import 'package:demo_app/db/purchase_database.dart';
 import 'package:demo_app/purchase_entry_page.dart';
 import 'package:demo_app/purchase_list_page.dart';
@@ -20,13 +21,14 @@ class _PurchaseHomePageState extends State<PurchaseHomePage> {
     getSumOfPurchase();
   }
 
-  void getSumOfPurchase() {
-    PurchaseDatabase().getSumOfPurchases().then((value) {
-      setState(() {
-        totalSpent = value;
-        remainingIncome = totalIncome - totalSpent;
-      });
-    });
+  void getSumOfPurchase() async{
+   int purchaseSum = await  PurchaseDatabase().getSumOfPurchases();
+   int income = await PurchaseDatabase().getIncome();
+
+   setState(() {
+       totalSpent = purchaseSum;
+       remainingIncome = income - purchaseSum;
+     });
   }
 
   @override
@@ -53,28 +55,29 @@ class _PurchaseHomePageState extends State<PurchaseHomePage> {
               ),
               RaisedButton(
                 child: Text('Add Purchase History'),
-                onPressed: () {
-                  addPurchase(context);
-                },
+                onPressed: () => addPurchase(context),
               ),
               RaisedButton(
                 child: Text('View Purchase History'),
-                onPressed: () {
-                  gotoPurchaseList(context);
-                },
+                onPressed: () => gotoPurchaseList(context),
               ),
               RaisedButton(
                 child: Text('Add Income'),
-                onPressed: () {
-                  final snackBar = SnackBar(content: Text('Work In Progress'));
-                  Scaffold.of(context).showSnackBar(snackBar);
-                },
+                onPressed: () => addIncome(context),
               )
             ],
           ),
         ],
       ),
     );
+  }
+
+  void addIncome(BuildContext context) async {
+    bool result = await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => AddIncome()));
+    if (result) {
+      getSumOfPurchase();
+    }
   }
 
   void gotoPurchaseList(BuildContext context) async {

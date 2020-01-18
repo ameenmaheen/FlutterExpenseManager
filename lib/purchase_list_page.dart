@@ -28,7 +28,9 @@ class _PurchaseListState extends State<PurchaseList> {
         ),
         body: Container(
           padding: EdgeInsets.all(16.0),
-          child: ListView.builder(
+          child: ListView.separated(
+              separatorBuilder: (context, index) =>
+                  Divider(color: Colors.black),
               itemCount: items.length,
               itemBuilder: (context, position) {
                 final item = items[position];
@@ -39,10 +41,8 @@ class _PurchaseListState extends State<PurchaseList> {
                     deleteItem(item);
                   },
                   child: ListTile(
-                    title: Text(
-                      '${item.id}. Name [ ${item.name} ] Price [ ${item.price} ] ',
-                      style: Theme.of(context).textTheme.headline,
-                    ),
+                    title: Text('${item.name}'),
+                    subtitle: Text('Price [ ${item.price} ] '),
                   ),
                 );
               }),

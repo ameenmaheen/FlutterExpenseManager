@@ -58,7 +58,7 @@ class PurchaseDatabase {
 
   Future<int> insertIncome(int income) async {
     Database db = await database.db;
-    return db.insert(_expenseTable, {INCOME: income});
+    return db.insert(_incomeTable, {INCOME: income});
   }
 
   Future<List<ItemModel>> queryAllRows() async {
@@ -87,6 +87,14 @@ class PurchaseDatabase {
     List<Map<String, dynamic>> maps = await db
         .rawQuery('SELECT SUM($PRICE)  as $BALANCE_INCOME FROM $_expenseTable');
     int sum = maps.first[BALANCE_INCOME];
+    return sum;
+  }
+
+  Future<int> getIncome() async {
+    final db = await database.db;
+    List<Map<String, dynamic>> maps = await db
+        .rawQuery('SELECT $INCOME FROM $_incomeTable');
+    int sum = maps.first[INCOME];
     return sum;
   }
 }
